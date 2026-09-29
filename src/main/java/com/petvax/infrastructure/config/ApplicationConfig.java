@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import com.petvax.application.port.in.CreateOwnerUseCase;
 import com.petvax.application.port.out.SaveOwnerPort;
 import com.petvax.application.service.CreateOwnerService;
+import com.petvax.application.port.in.CreatePetUseCase;
+import com.petvax.application.port.out.LoadOwnerPort;
+import com.petvax.application.port.out.SavePetPort;
+import com.petvax.application.service.CreatePetService;
 
 @Configuration
 public class ApplicationConfig {
@@ -33,5 +37,16 @@ public class ApplicationConfig {
     ) {
 
         return new CreateOwnerService(saveOwnerPort);
+    }
+    @Bean
+    public CreatePetUseCase createPetUseCase(
+            LoadOwnerPort loadOwnerPort,
+            SavePetPort savePetPort
+    ) {
+
+        return new CreatePetService(
+                loadOwnerPort,
+                savePetPort
+        );
     }
 }

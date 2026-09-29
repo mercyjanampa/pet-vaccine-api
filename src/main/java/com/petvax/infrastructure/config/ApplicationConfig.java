@@ -7,6 +7,9 @@ import com.petvax.application.port.out.SaveVaccinationPort;
 import com.petvax.application.service.RegisterVaccinationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.petvax.application.port.in.CreateOwnerUseCase;
+import com.petvax.application.port.out.SaveOwnerPort;
+import com.petvax.application.service.CreateOwnerService;
 
 @Configuration
 public class ApplicationConfig {
@@ -18,11 +21,17 @@ public class ApplicationConfig {
             SaveVaccinationPort saveVaccinationPort
     ) {
 
-        // Spring conecta aquí nuestro caso de uso con los puertos necesarios
         return new RegisterVaccinationService(
                 loadPetPort,
                 loadVaccinePort,
                 saveVaccinationPort
         );
+    }
+    @Bean
+    public CreateOwnerUseCase createOwnerUseCase(
+            SaveOwnerPort saveOwnerPort
+    ) {
+
+        return new CreateOwnerService(saveOwnerPort);
     }
 }

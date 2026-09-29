@@ -28,26 +28,22 @@ public class RegisterVaccinationService implements RegisterVaccinationUseCase {
     @Override
     public Vaccination register(RegisterVaccinationCommand command) {
 
-        // Primero verifico que la mascota realmente exista
-        Pet pet = loadPetPort.findById(command.petId())
+        Pet pet = loadPetPort.findPetById(command.petId())
                 .orElseThrow(() ->
                         new IllegalArgumentException("La mascota no existe")
                 );
 
-        // Luego verifico que la vacuna también exista
-        Vaccine vaccine = loadVaccinePort.findById(command.vaccineId())
+        Vaccine vaccine = loadVaccinePort.findVaccineById(command.vaccineId())
                 .orElseThrow(() ->
                         new IllegalArgumentException("La vacuna no existe")
                 );
 
-        // Evito registrar una vacuna que no corresponde a la especie
         if (pet.getSpecies() != vaccine.getSpecies()) {
             throw new IllegalArgumentException(
                     "La vacuna no corresponde a la especie de la mascota"
             );
         }
 
-        // Creo la vacunación con los datos recibidos
         Vaccination vaccination = new Vaccination(
                 null,
                 command.petId(),
@@ -57,7 +53,6 @@ public class RegisterVaccinationService implements RegisterVaccinationUseCase {
                 command.notes()
         );
 
-        // Finalmente guardo la vacunación
         return saveVaccinationPort.save(vaccination);
     }
 }

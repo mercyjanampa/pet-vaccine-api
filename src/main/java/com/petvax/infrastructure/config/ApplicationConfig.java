@@ -17,6 +17,15 @@ import com.petvax.application.service.CreatePetService;
 import com.petvax.application.port.in.CreateVaccineUseCase;
 import com.petvax.application.port.out.SaveVaccinePort;
 import com.petvax.application.service.CreateVaccineService;
+import com.petvax.application.port.in.ListOwnersUseCase;
+import com.petvax.application.port.out.LoadOwnersPort;
+import com.petvax.application.service.ListOwnersService;
+import com.petvax.application.port.in.ListPetsUseCase;
+import com.petvax.application.port.out.LoadPetsPort;
+import com.petvax.application.service.ListPetsService;
+import com.petvax.application.port.in.ListVaccinesUseCase;
+import com.petvax.application.port.out.LoadVaccinesPort;
+import com.petvax.application.service.ListVaccinesService;
 
 @Configuration
 public class ApplicationConfig {
@@ -57,7 +66,27 @@ public class ApplicationConfig {
             SaveVaccinePort saveVaccinePort
     ) {
 
-        // Spring conecta el caso de uso con el puerto que guarda vacunas
         return new CreateVaccineService(saveVaccinePort);
+    }
+    @Bean
+    public ListOwnersUseCase listOwnersUseCase(
+            LoadOwnersPort loadOwnersPort
+    ) {
+
+        return new ListOwnersService(loadOwnersPort);
+    }
+    @Bean
+    public ListPetsUseCase listPetsUseCase(
+            LoadPetsPort loadPetsPort
+    ) {
+
+        return new ListPetsService(loadPetsPort);
+    }
+    @Bean
+    public ListVaccinesUseCase listVaccinesUseCase(
+            LoadVaccinesPort loadVaccinesPort
+    ) {
+
+        return new ListVaccinesService(loadVaccinesPort);
     }
 }

@@ -8,9 +8,12 @@ import com.petvax.infrastructure.persistence.mapper.PetMapper;
 import com.petvax.infrastructure.persistence.repository.OwnerJpaRepository;
 import com.petvax.infrastructure.persistence.repository.PetJpaRepository;
 import org.springframework.stereotype.Component;
+import com.petvax.application.port.out.LoadPetsPort;
+import java.util.List;
 
 @Component
-public class PetPersistenceAdapter implements SavePetPort {
+public class PetPersistenceAdapter
+        implements SavePetPort, LoadPetsPort {
 
     private final PetJpaRepository petRepository;
     private final OwnerJpaRepository ownerRepository;
@@ -44,5 +47,13 @@ public class PetPersistenceAdapter implements SavePetPort {
         PetEntity savedEntity = petRepository.save(entity);
 
         return PetMapper.toDomain(savedEntity);
+    }
+    @Override
+    public List<Pet> findAllPets() {
+
+        return petRepository.findAll()
+                .stream()
+                .map(PetMapper::toDomain)
+                .toList();
     }
 }

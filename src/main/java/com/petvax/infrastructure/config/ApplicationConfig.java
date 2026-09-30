@@ -26,6 +26,15 @@ import com.petvax.application.service.ListPetsService;
 import com.petvax.application.port.in.ListVaccinesUseCase;
 import com.petvax.application.port.out.LoadVaccinesPort;
 import com.petvax.application.service.ListVaccinesService;
+import com.petvax.application.port.in.GetOwnerUseCase;
+import com.petvax.application.port.in.UpdateOwnerUseCase;
+import com.petvax.application.port.in.DeleteOwnerUseCase;
+
+import com.petvax.application.port.out.DeleteOwnerPort;
+
+import com.petvax.application.service.GetOwnerService;
+import com.petvax.application.service.UpdateOwnerService;
+import com.petvax.application.service.DeleteOwnerService;
 
 @Configuration
 public class ApplicationConfig {
@@ -88,5 +97,36 @@ public class ApplicationConfig {
     ) {
 
         return new ListVaccinesService(loadVaccinesPort);
+    }
+    @Bean
+    public GetOwnerUseCase getOwnerUseCase(
+            LoadOwnerPort loadOwnerPort
+    ) {
+
+        return new GetOwnerService(loadOwnerPort);
+    }
+
+    @Bean
+    public UpdateOwnerUseCase updateOwnerUseCase(
+            LoadOwnerPort loadOwnerPort,
+            SaveOwnerPort saveOwnerPort
+    ) {
+
+        return new UpdateOwnerService(
+                loadOwnerPort,
+                saveOwnerPort
+        );
+    }
+
+    @Bean
+    public DeleteOwnerUseCase deleteOwnerUseCase(
+            LoadOwnerPort loadOwnerPort,
+            DeleteOwnerPort deleteOwnerPort
+    ) {
+
+        return new DeleteOwnerService(
+                loadOwnerPort,
+                deleteOwnerPort
+        );
     }
 }

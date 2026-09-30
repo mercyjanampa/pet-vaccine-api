@@ -8,13 +8,17 @@ import com.petvax.infrastructure.persistence.entity.OwnerEntity;
 import com.petvax.infrastructure.persistence.mapper.OwnerMapper;
 import com.petvax.infrastructure.persistence.repository.OwnerJpaRepository;
 import org.springframework.stereotype.Component;
+import com.petvax.application.port.out.DeleteOwnerPort;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
 public class OwnerPersistenceAdapter
-        implements SaveOwnerPort, LoadOwnerPort, LoadOwnersPort {
+        implements SaveOwnerPort,
+        LoadOwnerPort,
+        LoadOwnersPort,
+        DeleteOwnerPort {
 
     private final OwnerJpaRepository ownerRepository;
 
@@ -46,5 +50,10 @@ public class OwnerPersistenceAdapter
                 .stream()
                 .map(OwnerMapper::toDomain)
                 .toList();
+    }
+    @Override
+    public void deleteOwnerById(Long id) {
+
+        ownerRepository.deleteById(id);
     }
 }

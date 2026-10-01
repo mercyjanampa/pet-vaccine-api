@@ -1,5 +1,4 @@
 package com.petvax.infrastructure.config;
-
 import com.petvax.application.port.in.RegisterVaccinationUseCase;
 import com.petvax.application.port.out.LoadPetPort;
 import com.petvax.application.port.out.LoadVaccinePort;
@@ -29,22 +28,28 @@ import com.petvax.application.service.ListVaccinesService;
 import com.petvax.application.port.in.GetOwnerUseCase;
 import com.petvax.application.port.in.UpdateOwnerUseCase;
 import com.petvax.application.port.in.DeleteOwnerUseCase;
-
 import com.petvax.application.port.out.DeleteOwnerPort;
-
 import com.petvax.application.service.GetOwnerService;
 import com.petvax.application.service.UpdateOwnerService;
 import com.petvax.application.service.DeleteOwnerService;
 import com.petvax.application.port.in.GetPetUseCase;
 import com.petvax.application.port.in.UpdatePetUseCase;
 import com.petvax.application.port.in.DeletePetUseCase;
-
 import com.petvax.application.port.out.DeletePetPort;
-
 import com.petvax.application.service.GetPetService;
 import com.petvax.application.service.UpdatePetService;
 import com.petvax.application.service.DeletePetService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import com.petvax.application.port.in.GetVaccineUseCase;
+import com.petvax.application.port.in.UpdateVaccineUseCase;
+import com.petvax.application.port.in.DeleteVaccineUseCase;
+import com.petvax.application.port.out.DeleteVaccinePort;
+import com.petvax.application.service.GetVaccineService;
+import com.petvax.application.service.UpdateVaccineService;
+import com.petvax.application.service.DeleteVaccineService;
+import com.petvax.application.port.in.ListVaccinesBySpeciesUseCase;
+import com.petvax.application.port.out.LoadVaccinesBySpeciesPort;
+import com.petvax.application.service.ListVaccinesBySpeciesService;
 
 @Configuration
 public class ApplicationConfig {
@@ -53,7 +58,10 @@ public class ApplicationConfig {
     public RegisterVaccinationUseCase registerVaccinationUseCase(
             @Qualifier("vaccinationPersistenceAdapter")
             LoadPetPort loadPetPort,
+
+            @Qualifier("vaccinationPersistenceAdapter")
             LoadVaccinePort loadVaccinePort,
+
             SaveVaccinationPort saveVaccinationPort
     ) {
 
@@ -174,6 +182,47 @@ public class ApplicationConfig {
         return new DeletePetService(
                 loadPetPort,
                 deletePetPort
+        );
+    }
+    @Bean
+    public GetVaccineUseCase getVaccineUseCase(
+            @Qualifier("vaccinePersistenceAdapter")
+            LoadVaccinePort loadVaccinePort
+    ) {
+
+        return new GetVaccineService(loadVaccinePort);
+    }
+    @Bean
+    public UpdateVaccineUseCase updateVaccineUseCase(
+            @Qualifier("vaccinePersistenceAdapter")
+            LoadVaccinePort loadVaccinePort,
+            SaveVaccinePort saveVaccinePort
+    ) {
+
+        return new UpdateVaccineService(
+                loadVaccinePort,
+                saveVaccinePort
+        );
+    }
+    @Bean
+    public DeleteVaccineUseCase deleteVaccineUseCase(
+            @Qualifier("vaccinePersistenceAdapter")
+            LoadVaccinePort loadVaccinePort,
+            DeleteVaccinePort deleteVaccinePort
+    ) {
+
+        return new DeleteVaccineService(
+                loadVaccinePort,
+                deleteVaccinePort
+        );
+    }
+    @Bean
+    public ListVaccinesBySpeciesUseCase listVaccinesBySpeciesUseCase(
+            LoadVaccinesBySpeciesPort loadVaccinesBySpeciesPort
+    ) {
+
+        return new ListVaccinesBySpeciesService(
+                loadVaccinesBySpeciesPort
         );
     }
 }

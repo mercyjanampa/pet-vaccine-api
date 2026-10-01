@@ -10,10 +10,19 @@ import com.petvax.infrastructure.persistence.repository.PetJpaRepository;
 import org.springframework.stereotype.Component;
 import com.petvax.application.port.out.LoadPetsPort;
 import java.util.List;
+import com.petvax.application.port.out.LoadPetPort;
+import com.petvax.application.port.out.DeletePetPort;
+import com.petvax.domain.model.Pet;
+import com.petvax.infrastructure.persistence.mapper.PetMapper;
+
+import java.util.Optional;
 
 @Component
 public class PetPersistenceAdapter
-        implements SavePetPort, LoadPetsPort {
+        implements SavePetPort,
+        LoadPetsPort,
+        LoadPetPort,
+        DeletePetPort {
 
     private final PetJpaRepository petRepository;
     private final OwnerJpaRepository ownerRepository;
@@ -25,7 +34,12 @@ public class PetPersistenceAdapter
         this.petRepository = petRepository;
         this.ownerRepository = ownerRepository;
     }
+    @Override
+    public Optional<Pet> findPetById(Long id) {
 
+        return petRepository.findById(id)
+                .map(PetMapper::toDomain);
+    }
     @Override
     public Pet savePet(Pet pet) {
 
@@ -55,5 +69,10 @@ public class PetPersistenceAdapter
                 .stream()
                 .map(PetMapper::toDomain)
                 .toList();
+    }
+    @Override
+    public void deletePetById(Long id) {
+
+        petRepository.deleteById(id);
     }
 }

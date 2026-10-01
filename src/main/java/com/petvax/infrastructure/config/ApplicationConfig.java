@@ -35,12 +35,23 @@ import com.petvax.application.port.out.DeleteOwnerPort;
 import com.petvax.application.service.GetOwnerService;
 import com.petvax.application.service.UpdateOwnerService;
 import com.petvax.application.service.DeleteOwnerService;
+import com.petvax.application.port.in.GetPetUseCase;
+import com.petvax.application.port.in.UpdatePetUseCase;
+import com.petvax.application.port.in.DeletePetUseCase;
+
+import com.petvax.application.port.out.DeletePetPort;
+
+import com.petvax.application.service.GetPetService;
+import com.petvax.application.service.UpdatePetService;
+import com.petvax.application.service.DeletePetService;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 @Configuration
 public class ApplicationConfig {
 
     @Bean
     public RegisterVaccinationUseCase registerVaccinationUseCase(
+            @Qualifier("vaccinationPersistenceAdapter")
             LoadPetPort loadPetPort,
             LoadVaccinePort loadVaccinePort,
             SaveVaccinationPort saveVaccinationPort
@@ -127,6 +138,42 @@ public class ApplicationConfig {
         return new DeleteOwnerService(
                 loadOwnerPort,
                 deleteOwnerPort
+        );
+    }
+    @Bean
+    public GetPetUseCase getPetUseCase(
+            @Qualifier("petPersistenceAdapter")
+            LoadPetPort loadPetPort
+    ) {
+
+        return new GetPetService(loadPetPort);
+    }
+
+    @Bean
+    public UpdatePetUseCase updatePetUseCase(
+            @Qualifier("petPersistenceAdapter")
+            LoadPetPort loadPetPort,
+            LoadOwnerPort loadOwnerPort,
+            SavePetPort savePetPort
+    ) {
+
+        return new UpdatePetService(
+                loadPetPort,
+                loadOwnerPort,
+                savePetPort
+        );
+    }
+
+    @Bean
+    public DeletePetUseCase deletePetUseCase(
+            @Qualifier("petPersistenceAdapter")
+            LoadPetPort loadPetPort,
+            DeletePetPort deletePetPort
+    ) {
+
+        return new DeletePetService(
+                loadPetPort,
+                deletePetPort
         );
     }
 }

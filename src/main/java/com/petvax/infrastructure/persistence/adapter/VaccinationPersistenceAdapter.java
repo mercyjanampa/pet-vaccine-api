@@ -16,12 +16,20 @@ import com.petvax.infrastructure.persistence.repository.PetJpaRepository;
 import com.petvax.infrastructure.persistence.repository.VaccinationJpaRepository;
 import com.petvax.infrastructure.persistence.repository.VaccineJpaRepository;
 import org.springframework.stereotype.Component;
-
+import com.petvax.application.port.out.LoadVaccinationsPort;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.util.List;
+import com.petvax.application.port.out.DeleteVaccinationPort;
+
 
 @Component
 public class VaccinationPersistenceAdapter
-        implements LoadPetPort, LoadVaccinePort, SaveVaccinationPort {
+        implements LoadPetPort,
+        LoadVaccinePort,
+        SaveVaccinationPort,
+        LoadVaccinationsPort,
+        DeleteVaccinationPort {
 
     private final PetJpaRepository petRepository;
     private final VaccineJpaRepository vaccineRepository;
@@ -71,5 +79,45 @@ public class VaccinationPersistenceAdapter
                 vaccinationRepository.save(entity);
 
         return VaccinationMapper.toDomain(savedEntity);
+    }
+    @Override
+    public Optional<Vaccination> findVaccinationById(Long id) {
+
+        return vaccinationRepository.findById(id)
+                .map(VaccinationMapper::toDomain);
+    }
+
+    @Override
+    public List<Vaccination> findAllVaccinations() {
+
+        return vaccinationRepository.findAll()
+                .stream()
+                .map(VaccinationMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Vaccination> findVaccinationsByPetId(Long petId) {
+
+        return vaccinationRepository.findByPetId(petId)
+                .stream()
+                .map(VaccinationMapper::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Vaccination> findExpiredVaccinations() {
+
+        return vaccinationRepository.findExpiredVaccinations(
+                        LocalDate.now()
+                )
+                .stream()
+                .map(VaccinationMapper::toDomain)
+                .toList();
+    }
+    @Override
+    public void deleteVaccinationById(Long id) {
+
+        vaccinationRepository.deleteById(id);
     }
 }

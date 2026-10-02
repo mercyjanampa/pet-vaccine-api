@@ -50,6 +50,24 @@ import com.petvax.application.service.DeleteVaccineService;
 import com.petvax.application.port.in.ListVaccinesBySpeciesUseCase;
 import com.petvax.application.port.out.LoadVaccinesBySpeciesPort;
 import com.petvax.application.service.ListVaccinesBySpeciesService;
+import com.petvax.application.port.in.GetVaccinationUseCase;
+import com.petvax.application.port.in.ListExpiredVaccinationsUseCase;
+import com.petvax.application.port.in.ListVaccinationsByPetUseCase;
+import com.petvax.application.port.in.ListVaccinationsUseCase;
+
+import com.petvax.application.port.out.LoadVaccinationsPort;
+
+import com.petvax.application.service.GetVaccinationService;
+import com.petvax.application.service.ListExpiredVaccinationsService;
+import com.petvax.application.service.ListVaccinationsByPetService;
+import com.petvax.application.service.ListVaccinationsService;
+import com.petvax.application.port.in.UpdateVaccinationUseCase;
+import com.petvax.application.port.in.DeleteVaccinationUseCase;
+
+import com.petvax.application.port.out.DeleteVaccinationPort;
+
+import com.petvax.application.service.UpdateVaccinationService;
+import com.petvax.application.service.DeleteVaccinationService;
 
 @Configuration
 public class ApplicationConfig {
@@ -223,6 +241,75 @@ public class ApplicationConfig {
 
         return new ListVaccinesBySpeciesService(
                 loadVaccinesBySpeciesPort
+        );
+    }
+    @Bean
+    public ListVaccinationsUseCase listVaccinationsUseCase(
+            LoadVaccinationsPort loadVaccinationsPort
+    ) {
+
+        return new ListVaccinationsService(loadVaccinationsPort);
+    }
+
+    @Bean
+    public GetVaccinationUseCase getVaccinationUseCase(
+            LoadVaccinationsPort loadVaccinationsPort
+    ) {
+
+        return new GetVaccinationService(loadVaccinationsPort);
+    }
+
+    @Bean
+    public ListVaccinationsByPetUseCase listVaccinationsByPetUseCase(
+            @Qualifier("vaccinationPersistenceAdapter")
+            LoadPetPort loadPetPort,
+            LoadVaccinationsPort loadVaccinationsPort
+    ) {
+
+        return new ListVaccinationsByPetService(
+                loadPetPort,
+                loadVaccinationsPort
+        );
+    }
+
+    @Bean
+    public ListExpiredVaccinationsUseCase listExpiredVaccinationsUseCase(
+            LoadVaccinationsPort loadVaccinationsPort
+    ) {
+
+        return new ListExpiredVaccinationsService(
+                loadVaccinationsPort
+        );
+    }
+    @Bean
+    public UpdateVaccinationUseCase updateVaccinationUseCase(
+            LoadVaccinationsPort loadVaccinationsPort,
+
+            @Qualifier("vaccinationPersistenceAdapter")
+            LoadPetPort loadPetPort,
+
+            @Qualifier("vaccinationPersistenceAdapter")
+            LoadVaccinePort loadVaccinePort,
+
+            SaveVaccinationPort saveVaccinationPort
+    ) {
+
+        return new UpdateVaccinationService(
+                loadVaccinationsPort,
+                loadPetPort,
+                loadVaccinePort,
+                saveVaccinationPort
+        );
+    }
+    @Bean
+    public DeleteVaccinationUseCase deleteVaccinationUseCase(
+            LoadVaccinationsPort loadVaccinationsPort,
+            DeleteVaccinationPort deleteVaccinationPort
+    ) {
+
+        return new DeleteVaccinationService(
+                loadVaccinationsPort,
+                deleteVaccinationPort
         );
     }
 }

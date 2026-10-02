@@ -1,7 +1,5 @@
 package com.petvax.infrastructure.persistence.adapter;
 
-import com.petvax.application.port.out.LoadPetPort;
-import com.petvax.application.port.out.LoadVaccinePort;
 import com.petvax.application.port.out.SaveVaccinationPort;
 import com.petvax.domain.model.Pet;
 import com.petvax.domain.model.Vaccination;
@@ -25,9 +23,7 @@ import com.petvax.application.port.out.DeleteVaccinationPort;
 
 @Component
 public class VaccinationPersistenceAdapter
-        implements LoadPetPort,
-        LoadVaccinePort,
-        SaveVaccinationPort,
+        implements SaveVaccinationPort,
         LoadVaccinationsPort,
         DeleteVaccinationPort {
 
@@ -43,20 +39,6 @@ public class VaccinationPersistenceAdapter
         this.petRepository = petRepository;
         this.vaccineRepository = vaccineRepository;
         this.vaccinationRepository = vaccinationRepository;
-    }
-
-    @Override
-    public Optional<Pet> findPetById(Long id) {
-
-        return petRepository.findById(id)
-                .map(PetMapper::toDomain);
-    }
-
-    @Override
-    public Optional<Vaccine> findVaccineById(Long id) {
-
-        return vaccineRepository.findById(id)
-                .map(VaccineMapper::toDomain);
     }
 
     @Override

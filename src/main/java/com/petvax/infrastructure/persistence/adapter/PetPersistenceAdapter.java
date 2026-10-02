@@ -8,7 +8,6 @@ import com.petvax.infrastructure.persistence.mapper.PetMapper;
 import com.petvax.infrastructure.persistence.repository.OwnerJpaRepository;
 import com.petvax.infrastructure.persistence.repository.PetJpaRepository;
 import org.springframework.stereotype.Component;
-import com.petvax.application.port.out.LoadPetsPort;
 import java.util.List;
 import com.petvax.application.port.out.LoadPetPort;
 import com.petvax.application.port.out.DeletePetPort;
@@ -20,7 +19,6 @@ import java.util.Optional;
 @Component
 public class PetPersistenceAdapter
         implements SavePetPort,
-        LoadPetsPort,
         LoadPetPort,
         DeletePetPort {
 

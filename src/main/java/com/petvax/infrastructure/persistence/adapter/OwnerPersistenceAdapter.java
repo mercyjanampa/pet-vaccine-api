@@ -1,7 +1,6 @@
 package com.petvax.infrastructure.persistence.adapter;
 
 import com.petvax.application.port.out.LoadOwnerPort;
-import com.petvax.application.port.out.LoadOwnersPort;
 import com.petvax.application.port.out.SaveOwnerPort;
 import com.petvax.domain.model.Owner;
 import com.petvax.infrastructure.persistence.entity.OwnerEntity;
@@ -17,7 +16,6 @@ import java.util.Optional;
 public class OwnerPersistenceAdapter
         implements SaveOwnerPort,
         LoadOwnerPort,
-        LoadOwnersPort,
         DeleteOwnerPort {
 
     private final OwnerJpaRepository ownerRepository;

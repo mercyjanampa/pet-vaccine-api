@@ -1,7 +1,7 @@
 package com.petvax.application.service;
 
 import com.petvax.application.port.in.ListVaccinesBySpeciesUseCase;
-import com.petvax.application.port.out.LoadVaccinesBySpeciesPort;
+import com.petvax.application.port.out.LoadVaccinePort;
 import com.petvax.domain.model.Species;
 import com.petvax.domain.model.Vaccine;
 
@@ -10,17 +10,17 @@ import java.util.List;
 public class ListVaccinesBySpeciesService
         implements ListVaccinesBySpeciesUseCase {
 
-    private final LoadVaccinesBySpeciesPort loadVaccinesBySpeciesPort;
+    private final LoadVaccinePort loadVaccinePort;
 
     public ListVaccinesBySpeciesService(
-            LoadVaccinesBySpeciesPort loadVaccinesBySpeciesPort
+            LoadVaccinePort loadVaccinePort
     ) {
-        this.loadVaccinesBySpeciesPort = loadVaccinesBySpeciesPort;
+        this.loadVaccinePort = loadVaccinePort;
     }
 
     @Override
     public List<Vaccine> findBySpecies(Species species) {
 
-        return loadVaccinesBySpeciesPort.findVaccinesBySpecies(species);
+        return loadVaccinePort.findVaccinesBySpecies(species);
     }
 }

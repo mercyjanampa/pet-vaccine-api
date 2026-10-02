@@ -6,23 +6,19 @@ import com.petvax.infrastructure.persistence.entity.VaccineEntity;
 import com.petvax.infrastructure.persistence.mapper.VaccineMapper;
 import com.petvax.infrastructure.persistence.repository.VaccineJpaRepository;
 import org.springframework.stereotype.Component;
-import com.petvax.application.port.out.LoadVaccinesPort;
 import java.util.List;
 import com.petvax.application.port.out.DeleteVaccinePort;
 import com.petvax.application.port.out.LoadVaccinePort;
-import com.petvax.application.port.out.LoadVaccinesPort;
-import com.petvax.application.port.out.SaveVaccinePort;
+
 import java.util.Optional;
-import com.petvax.application.port.out.LoadVaccinesBySpeciesPort;
+
 import com.petvax.domain.model.Species;
 
 @Component
 public class VaccinePersistenceAdapter
         implements SaveVaccinePort,
-        LoadVaccinesPort,
         LoadVaccinePort,
-        DeleteVaccinePort,
-        LoadVaccinesBySpeciesPort {
+        DeleteVaccinePort {
 
     private final VaccineJpaRepository vaccineRepository;
 

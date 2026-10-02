@@ -74,4 +74,23 @@ class VaccinationTest {
                 )
         );
     }
+    @Test
+    void shouldFailWhenApplicationDateIsInTheFuture() {
+
+        // No debería poder registrarse una vacunación como aplicada en el futuro
+        LocalDate applicationDate = LocalDate.now().plusDays(1);
+        LocalDate nextDoseDate = LocalDate.now().plusMonths(12);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Vaccination(
+                        1L,
+                        1L,
+                        1L,
+                        applicationDate,
+                        nextDoseDate,
+                        "Fecha futura"
+                )
+        );
+    }
 }

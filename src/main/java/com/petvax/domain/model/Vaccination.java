@@ -12,21 +12,46 @@ public class Vaccination {
     private LocalDate nextDoseDate;
     private String notes;
 
-    public Vaccination(Long id,
-                       Long petId,
-                       Long vaccineId,
-                       LocalDate applicationDate,
-                       LocalDate nextDoseDate,
-                       String notes) {
+    public Vaccination(
+            Long id,
+            Long petId,
+            Long vaccineId,
+            LocalDate applicationDate,
+            LocalDate nextDoseDate,
+            String notes
+    ) {
 
+        // Toda vacunación debe pertenecer a una mascota
+        if (petId == null) {
+            throw new IllegalArgumentException(
+                    "La mascota es obligatoria"
+            );
+        }
+
+        // Debe indicarse la vacuna aplicada
+        if (vaccineId == null) {
+            throw new IllegalArgumentException(
+                    "La vacuna es obligatoria"
+            );
+        }
+
+        // La fecha de aplicación es necesaria
         if (applicationDate == null) {
             throw new IllegalArgumentException(
                     "La fecha de aplicación es obligatoria"
             );
         }
 
-        if (nextDoseDate != null &&
-                nextDoseDate.isBefore(applicationDate)) {
+        // No permito registrar una vacunación aplicada en una fecha futura
+        if (applicationDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "La fecha de aplicación no puede estar en el futuro"
+            );
+        }
+
+        // La próxima dosis no puede ser anterior a la aplicación
+        if (nextDoseDate != null
+                && nextDoseDate.isBefore(applicationDate)) {
 
             throw new IllegalArgumentException(
                     "La próxima dosis no puede ser anterior a la fecha de aplicación"
@@ -43,18 +68,21 @@ public class Vaccination {
 
     public VaccinationStatus getStatus() {
 
+        // Si todavía no hay una fecha para la siguiente dosis
         if (nextDoseDate == null) {
             return VaccinationStatus.PENDING;
         }
 
         LocalDate today = LocalDate.now();
 
+        // La fecha ya pasó
         if (nextDoseDate.isBefore(today)) {
             return VaccinationStatus.EXPIRED;
         }
 
         long days = ChronoUnit.DAYS.between(today, nextDoseDate);
 
+        // Si faltan siete días o menos, avisamos que está próxima
         if (days <= 7) {
             return VaccinationStatus.UPCOMING;
         }

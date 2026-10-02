@@ -12,13 +12,43 @@ public class Pet {
     private String sex;
     private Long ownerId;
 
-    public Pet(Long id,
-               String name,
-               Species species,
-               String breed,
-               LocalDate birthDate,
-               String sex,
-               Long ownerId) {
+    public Pet(
+            Long id,
+            String name,
+            Species species,
+            String breed,
+            LocalDate birthDate,
+            String sex,
+            Long ownerId
+    ) {
+
+        // Una mascota debe tener un nombre válido
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException(
+                    "El nombre de la mascota es obligatorio"
+            );
+        }
+
+        // La especie es necesaria para validar vacunas compatibles
+        if (species == null) {
+            throw new IllegalArgumentException(
+                    "La especie de la mascota es obligatoria"
+            );
+        }
+
+        // No tendría sentido registrar una mascota nacida en el futuro
+        if (birthDate != null && birthDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "La fecha de nacimiento no puede estar en el futuro"
+            );
+        }
+
+        // Toda mascota debe estar asociada a un dueño
+        if (ownerId == null) {
+            throw new IllegalArgumentException(
+                    "La mascota debe tener un dueño"
+            );
+        }
 
         this.id = id;
         this.name = name;

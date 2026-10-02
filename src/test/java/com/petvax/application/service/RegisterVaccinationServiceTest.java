@@ -20,6 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import com.petvax.application.port.out.CheckVaccinationExistsPort;
 
 @ExtendWith(MockitoExtension.class)
 class RegisterVaccinationServiceTest {
@@ -32,6 +33,9 @@ class RegisterVaccinationServiceTest {
 
     @Mock
     private SaveVaccinationPort saveVaccinationPort;
+
+    @Mock
+    private CheckVaccinationExistsPort checkVaccinationExistsPort;
 
     @InjectMocks
     private RegisterVaccinationService service;
@@ -255,5 +259,65 @@ class RegisterVaccinationServiceTest {
 
         verify(saveVaccinationPort, never())
                 .save(any());
+    }
+    @Test
+    void shouldFailWhenVaccinationAlreadyExists() {
+
+        Pet pet = new Pet(
+                1L,
+                "Chetos",
+                Species.DOG,
+                "Labrador",
+                LocalDate.of(2023, 5, 10),
+                "F",
+                1L
+        );
+
+        Vaccine vaccine = new Vaccine(
+                1L,
+                "Vacuna de prueba",
+                Species.DOG,
+                "Vacuna para pruebas",
+                12
+        );
+
+        RegisterVaccinationCommand command =
+                new RegisterVaccinationCommand(
+                        1L,
+                        1L,
+                        LocalDate.now(),
+                        LocalDate.now().plusMonths(12),
+                        "Registro duplicado"
+                );
+
+        when(loadPetPort.findPetById(1L))
+                .thenReturn(Optional.of(pet));
+
+        when(loadVaccinePort.findVaccineById(1L))
+                .thenReturn(Optional.of(vaccine));
+
+        // Simulo que ya existe el mismo registro
+        when(checkVaccinationExistsPort
+                .existsByPetIdAndVaccineIdAndApplicationDate(
+                        1L,
+                        1L,
+                        command.applicationDate()
+                ))
+                .thenReturn(true);
+
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> service.register(command)
+                );
+
+        assertEquals(
+                "Ya existe una vacunación registrada para la misma mascota, vacuna y fecha",
+                exception.getMessage()
+        );
+
+        // Si está duplicada, no debe guardarse
+        verify(saveVaccinationPort, never())
+                .save(any(Vaccination.class));
     }
 }

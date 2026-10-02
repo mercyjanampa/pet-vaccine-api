@@ -1,15 +1,11 @@
 package com.petvax.infrastructure.persistence.adapter;
 
 import com.petvax.application.port.out.SaveVaccinationPort;
-import com.petvax.domain.model.Pet;
 import com.petvax.domain.model.Vaccination;
-import com.petvax.domain.model.Vaccine;
 import com.petvax.infrastructure.persistence.entity.PetEntity;
 import com.petvax.infrastructure.persistence.entity.VaccinationEntity;
 import com.petvax.infrastructure.persistence.entity.VaccineEntity;
-import com.petvax.infrastructure.persistence.mapper.PetMapper;
 import com.petvax.infrastructure.persistence.mapper.VaccinationMapper;
-import com.petvax.infrastructure.persistence.mapper.VaccineMapper;
 import com.petvax.infrastructure.persistence.repository.PetJpaRepository;
 import com.petvax.infrastructure.persistence.repository.VaccinationJpaRepository;
 import com.petvax.infrastructure.persistence.repository.VaccineJpaRepository;
@@ -19,13 +15,15 @@ import java.util.Optional;
 import java.time.LocalDate;
 import java.util.List;
 import com.petvax.application.port.out.DeleteVaccinationPort;
+import com.petvax.application.port.out.CheckVaccinationExistsPort;
 
 
 @Component
 public class VaccinationPersistenceAdapter
         implements SaveVaccinationPort,
         LoadVaccinationsPort,
-        DeleteVaccinationPort {
+        DeleteVaccinationPort,
+        CheckVaccinationExistsPort {
 
     private final PetJpaRepository petRepository;
     private final VaccineJpaRepository vaccineRepository;
@@ -101,5 +99,18 @@ public class VaccinationPersistenceAdapter
     public void deleteVaccinationById(Long id) {
 
         vaccinationRepository.deleteById(id);
+    }
+    @Override
+    public boolean existsByPetIdAndVaccineIdAndApplicationDate(
+            Long petId,
+            Long vaccineId,
+            LocalDate applicationDate
+    ) {
+        return vaccinationRepository
+                .existsByPetIdAndVaccineIdAndApplicationDate(
+                        petId,
+                        vaccineId,
+                        applicationDate
+                );
     }
 }

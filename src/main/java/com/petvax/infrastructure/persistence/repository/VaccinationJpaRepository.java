@@ -22,4 +22,9 @@ public interface VaccinationJpaRepository
     List<VaccinationEntity> findExpiredVaccinations(
             @Param("today") LocalDate today
     );
+    boolean existsByPetIdAndVaccineIdAndApplicationDate(
+            Long petId,
+            Long vaccineId,
+            LocalDate applicationDate
+    );
 }

@@ -1,7 +1,7 @@
 package com.petvax.infrastructure.config;
 
 import com.petvax.application.port.in.*;
-import com.petvax.application.port.out. *;
+import com.petvax.application.port.out.*;
 import com.petvax.application.service.*;
 
 import org.springframework.context.annotation.Bean;
@@ -18,12 +18,14 @@ public class ApplicationConfig {
     public RegisterVaccinationUseCase registerVaccinationUseCase(
             LoadPetPort loadPetPort,
             LoadVaccinePort loadVaccinePort,
-            SaveVaccinationPort saveVaccinationPort
+            SaveVaccinationPort saveVaccinationPort,
+            CheckVaccinationExistsPort checkVaccinationExistsPort
     ) {
         return new RegisterVaccinationService(
                 loadPetPort,
                 loadVaccinePort,
-                saveVaccinationPort
+                saveVaccinationPort,
+                checkVaccinationExistsPort
         );
     }
 

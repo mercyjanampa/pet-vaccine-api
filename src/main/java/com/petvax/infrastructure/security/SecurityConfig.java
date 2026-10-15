@@ -117,7 +117,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Registro y login son públicos
+                        // Registro y login públicos
                         .requestMatchers(
                                 "/auth/**"
                         ).permitAll()
@@ -129,47 +129,70 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // Consultas para USER y ADMIN
+                        // =========================
+                        // ADMIN
+                        // =========================
+
+                        // Los usuarios y propietarios se administran desde ADMIN
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/**"
+                                "/api/owners",
+                                "/api/owners/**"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/owners",
+                                "/api/owners/**"
+                        ).hasRole("ADMIN")
+
+                        // El catálogo de vacunas solo lo modifica ADMIN
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/vaccines",
+                                "/api/vaccines/**"
+                        ).hasRole("ADMIN")
+
+                        // =========================
+                        // USER + ADMIN
+                        // =========================
+
+                        // USER puede registrar sus propias mascotas
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/pets",
+                                "/api/pets/**"
                         ).hasAnyRole("USER", "ADMIN")
 
-                        // Un USER puede registrar una vacunación
+                        // USER puede registrar vacunaciones
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/vaccinations",
                                 "/api/vaccinations/**"
                         ).hasAnyRole("USER", "ADMIN")
 
-                        // Crear dueños, mascotas y vacunas: ADMIN
+                        // Consultas permitidas.
+                        // La aplicación se encarga de filtrar los recursos del USER.
                         .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/owners",
-                                "/api/owners/**",
-                                "/api/pets",
-                                "/api/pets/**",
-                                "/api/vaccines",
-                                "/api/vaccines/**"
-                        ).hasRole("ADMIN")
+                                HttpMethod.GET,
+                                "/api/**"
+                        ).hasAnyRole("USER", "ADMIN")
 
-                        // Actualizaciones: ADMIN
+                        // Por ahora las modificaciones siguen siendo de ADMIN
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/**"
                         ).hasRole("ADMIN")
 
-                        // Eliminaciones: ADMIN
+                        // Por ahora las eliminaciones siguen siendo de ADMIN
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/**"
                         ).hasRole("ADMIN")
 
-                        // Todo lo demás requiere autenticación
                         .anyRequest()
                         .authenticated()
                 )
-
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
                                 jwt.jwtAuthenticationConverter(

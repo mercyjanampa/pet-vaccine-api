@@ -32,16 +32,26 @@ public class ApplicationConfig {
 
     @Bean
     public ListVaccinationsUseCase listVaccinationsUseCase(
-            LoadVaccinationsPort loadVaccinationsPort
+            LoadVaccinationsPort loadVaccinationsPort,
+            LoadUserPort loadUserPort
     ) {
-        return new ListVaccinationsService(loadVaccinationsPort);
+        return new ListVaccinationsService(
+                loadVaccinationsPort,
+                loadUserPort
+        );
     }
 
     @Bean
     public GetVaccinationUseCase getVaccinationUseCase(
-            LoadVaccinationsPort loadVaccinationsPort
+            LoadVaccinationsPort loadVaccinationsPort,
+            LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort
     ) {
-        return new GetVaccinationService(loadVaccinationsPort);
+        return new GetVaccinationService(
+                loadVaccinationsPort,
+                loadPetPort,
+                loadUserPort
+        );
     }
 
     @Bean
@@ -144,26 +154,36 @@ public class ApplicationConfig {
     @Bean
     public CreatePetUseCase createPetUseCase(
             LoadOwnerPort loadOwnerPort,
+            LoadUserPort loadUserPort,
             SavePetPort savePetPort
     ) {
         return new CreatePetService(
                 loadOwnerPort,
+                loadUserPort,
                 savePetPort
         );
     }
 
     @Bean
     public ListPetsUseCase listPetsUseCase(
-            LoadPetPort loadPetPort
+            LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort
     ) {
-        return new ListPetsService(loadPetPort);
+        return new ListPetsService(
+                loadPetPort,
+                loadUserPort
+        );
     }
 
     @Bean
     public GetPetUseCase getPetUseCase(
-            LoadPetPort loadPetPort
+            LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort
     ) {
-        return new GetPetService(loadPetPort);
+        return new GetPetService(
+                loadPetPort,
+                loadUserPort
+        );
     }
 
     @Bean

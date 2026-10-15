@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ListVaccinationsUseCase {
 
-    List<Vaccination> findAll();
+    List<Vaccination> findAll(String email);
 }

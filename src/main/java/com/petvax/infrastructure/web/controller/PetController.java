@@ -47,7 +47,8 @@ public class PetController {
 
     @PostMapping
     public ResponseEntity<PetResponse> createPet(
-            @Valid @RequestBody CreatePetRequest request
+            @Valid @RequestBody CreatePetRequest request,
+            Authentication authentication
     ) {
 
         CreatePetCommand command = new CreatePetCommand(
@@ -55,11 +56,13 @@ public class PetController {
                 request.species(),
                 request.breed(),
                 request.birthDate(),
-                request.sex(),
-                request.ownerId()
+                request.sex()
         );
 
-        Pet pet = createPetUseCase.create(command);
+        Pet pet = createPetUseCase.create(
+                command,
+                authentication.getName()
+        );
 
         PetResponse response = new PetResponse(
                 pet.getId(),
@@ -76,9 +79,12 @@ public class PetController {
                 .body(response);
     }
     @GetMapping
-    public ResponseEntity<List<PetResponse>> findAllPets() {
+    public ResponseEntity<List<PetResponse>> findAllPets(
+            Authentication authentication
+    ) {
 
-        List<PetResponse> pets = listPetsUseCase.findAll()
+        List<PetResponse> pets = listPetsUseCase
+                .findAll(authentication.getName())
                 .stream()
                 .map(pet -> new PetResponse(
                         pet.getId(),
@@ -95,10 +101,14 @@ public class PetController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<PetResponse> findPetById(
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication
     ) {
 
-        Pet pet = getPetUseCase.findById(id);
+        Pet pet = getPetUseCase.findById(
+                id,
+                authentication.getName()
+        );
 
         PetResponse response = new PetResponse(
                 pet.getId(),

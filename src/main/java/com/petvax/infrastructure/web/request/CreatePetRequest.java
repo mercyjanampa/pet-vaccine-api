@@ -18,10 +18,7 @@ public record CreatePetRequest(
 
         LocalDate birthDate,
 
-        String sex,
-
-        @NotNull(message = "El dueño es obligatorio")
-        Long ownerId
+        String sex
 
 ) {
 }

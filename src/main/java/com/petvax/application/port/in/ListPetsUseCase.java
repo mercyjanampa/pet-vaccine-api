@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ListPetsUseCase {
 
-    List<Pet> findAll();
+    List<Pet> findAll(String email);
 }

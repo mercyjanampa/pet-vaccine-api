@@ -9,7 +9,6 @@ public record CreatePetCommand(
         Species species,
         String breed,
         LocalDate birthDate,
-        String sex,
-        Long ownerId
+        String sex
 ) {
 }

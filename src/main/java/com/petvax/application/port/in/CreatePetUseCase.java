@@ -5,5 +5,8 @@ import com.petvax.domain.model.Pet;
 
 public interface CreatePetUseCase {
 
-    Pet create(CreatePetCommand command);
+    Pet create(
+            CreatePetCommand command,
+            String email
+    );
 }

@@ -4,5 +4,5 @@ import com.petvax.domain.model.Vaccination;
 
 public interface GetVaccinationUseCase {
 
-    Vaccination findById(Long id);
+    Vaccination findById(Long id, String email);
 }

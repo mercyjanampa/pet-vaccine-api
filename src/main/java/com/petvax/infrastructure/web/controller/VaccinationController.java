@@ -79,10 +79,14 @@ public class VaccinationController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VaccinationResponse>> findAllVaccinations() {
+    public ResponseEntity<List<VaccinationResponse>> findAllVaccinations(
+            Authentication authentication
+    ) {
 
         List<VaccinationResponse> vaccinations =
-                listVaccinationsUseCase.findAll()
+                listVaccinationsUseCase.findAll(
+                                authentication.getName()
+                        )
                         .stream()
                         .map(this::toResponse)
                         .toList();
@@ -92,11 +96,15 @@ public class VaccinationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<VaccinationResponse> findVaccinationById(
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication
     ) {
 
         Vaccination vaccination =
-                getVaccinationUseCase.findById(id);
+                getVaccinationUseCase.findById(
+                        id,
+                        authentication.getName()
+                );
 
         return ResponseEntity.ok(
                 toResponse(vaccination)

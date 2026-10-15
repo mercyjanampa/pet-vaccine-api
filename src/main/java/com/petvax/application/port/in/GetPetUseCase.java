@@ -4,5 +4,5 @@ import com.petvax.domain.model.Pet;
 
 public interface GetPetUseCase {
 
-    Pet findById(Long id);
+    Pet findById(Long id, String email);
 }

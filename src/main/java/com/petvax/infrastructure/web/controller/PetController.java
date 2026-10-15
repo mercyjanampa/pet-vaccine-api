@@ -15,6 +15,8 @@ import com.petvax.application.port.in.GetPetUseCase;
 import com.petvax.application.port.in.UpdatePetUseCase;
 import com.petvax.application.port.in.DeletePetUseCase;
 import com.petvax.infrastructure.web.request.UpdatePetRequest;
+import org.springframework.security.core.Authentication;
+import com.petvax.application.port.in.GetMyPetsUseCase;
 
 @RestController
 @RequestMapping("/api/pets")
@@ -25,19 +27,22 @@ public class PetController {
     private final GetPetUseCase getPetUseCase;
     private final UpdatePetUseCase updatePetUseCase;
     private final DeletePetUseCase deletePetUseCase;
+    private final GetMyPetsUseCase getMyPetsUseCase;
 
     public PetController(
             CreatePetUseCase createPetUseCase,
             ListPetsUseCase listPetsUseCase,
             GetPetUseCase getPetUseCase,
             UpdatePetUseCase updatePetUseCase,
-            DeletePetUseCase deletePetUseCase
+            DeletePetUseCase deletePetUseCase,
+            GetMyPetsUseCase getMyPetsUseCase
     ) {
         this.createPetUseCase = createPetUseCase;
         this.listPetsUseCase = listPetsUseCase;
         this.getPetUseCase = getPetUseCase;
         this.updatePetUseCase = updatePetUseCase;
         this.deletePetUseCase = deletePetUseCase;
+        this.getMyPetsUseCase = getMyPetsUseCase;
     }
 
     @PostMapping
@@ -143,5 +148,26 @@ public class PetController {
         deletePetUseCase.delete(id);
 
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/my")
+    public ResponseEntity<List<PetResponse>> getMyPets(
+            Authentication authentication
+    ) {
+
+        List<PetResponse> pets = getMyPetsUseCase
+                .getMyPets(authentication.getName())
+                .stream()
+                .map(pet -> new PetResponse(
+                        pet.getId(),
+                        pet.getName(),
+                        pet.getSpecies(),
+                        pet.getBreed(),
+                        pet.getBirthDate(),
+                        pet.getSex(),
+                        pet.getOwnerId()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(pets);
     }
 }

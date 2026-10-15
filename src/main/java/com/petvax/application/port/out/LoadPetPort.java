@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface LoadPetPort {
 
-    // Busca una mascota específica
     Optional<Pet> findPetById(Long id);
 
-    // Consulta todas las mascotas
     List<Pet> findAllPets();
+
+    List<Pet> findPetsByOwnerId(Long ownerId);
 }

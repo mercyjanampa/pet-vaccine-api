@@ -250,6 +250,7 @@ public class ApplicationConfig {
             SaveUserPort saveUserPort,
             LoadUserPort loadUserPort,
             CheckUserExistsPort checkUserExistsPort,
+            SaveOwnerPort saveOwnerPort,
             PasswordHasherPort passwordHasherPort,
             AuthenticatorPort authenticatorPort,
             TokenIssuerPort tokenIssuerPort
@@ -258,9 +259,20 @@ public class ApplicationConfig {
                 saveUserPort,
                 loadUserPort,
                 checkUserExistsPort,
+                saveOwnerPort,
                 passwordHasherPort,
                 authenticatorPort,
                 tokenIssuerPort
+        );
+    }
+    @Bean
+    public GetMyPetsUseCase getMyPetsUseCase(
+            LoadUserPort loadUserPort,
+            LoadPetPort loadPetPort
+    ) {
+        return new GetMyPetsService(
+                loadUserPort,
+                loadPetPort
         );
     }
 

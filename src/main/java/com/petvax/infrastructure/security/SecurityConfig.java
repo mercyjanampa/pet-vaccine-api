@@ -1,39 +1,34 @@
 package com.petvax.infrastructure.security;
 
+import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-
-import com.nimbusds.jose.jwk.source.ImmutableSecret;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Configuration
@@ -41,25 +36,9 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public UserDetailsService users(PasswordEncoder encoder) {
-
-        UserDetails user = User.withUsername("user")
-                .password(encoder.encode("user123"))
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User.withUsername("admin")
-                .password(encoder.encode("admin123"))
-                .roles("USER", "ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user, admin);
-    }
     @Bean
     public SecretKey jwtKey(
             @Value("${jwt.secret}") String secret
@@ -72,7 +51,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtEncoder jwtEncoder(SecretKey key) {
-
         return new NimbusJwtEncoder(
                 new ImmutableSecret<>(key)
         );
@@ -80,12 +58,12 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder(SecretKey key) {
-
         return NimbusJwtDecoder
                 .withSecretKey(key)
                 .macAlgorithm(MacAlgorithm.HS256)
                 .build();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(
             UserDetailsService users,
@@ -99,16 +77,17 @@ public class SecurityConfig {
 
         return new ProviderManager(provider);
     }
+
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
 
         JwtGrantedAuthoritiesConverter roles =
                 new JwtGrantedAuthoritiesConverter();
 
-        // Nuestro token guarda: ["USER", "ADMIN"]
+        // El JWT guarda roles como ["USER"] o ["ADMIN"]
         roles.setAuthoritiesClaimName("roles");
 
-        // Spring lo convierte a ROLE_USER y ROLE_ADMIN
+        // Spring los convierte a ROLE_USER / ROLE_ADMIN
         roles.setAuthorityPrefix("ROLE_");
 
         JwtAuthenticationConverter converter =
@@ -118,6 +97,7 @@ public class SecurityConfig {
 
         return converter;
     }
+
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
@@ -125,11 +105,10 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                // Nuestra API trabaja con Bearer Token, no con sesión del navegador
                 .csrf(csrf -> csrf.disable())
+
                 .cors(Customizer.withDefaults())
 
-                // JWT = aplicación stateless
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
@@ -138,50 +117,55 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Login público
+                        // Registro y login son públicos
                         .requestMatchers(
-                                HttpMethod.POST,
-                                "/auth/login"
+                                "/auth/**"
                         ).permitAll()
 
-                        // Swagger público para poder probar la API
+                        // Swagger público
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // Consultas: cualquier usuario autenticado
+                        // Consultas para USER y ADMIN
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/**"
                         ).hasAnyRole("USER", "ADMIN")
 
-                        // Registrar vacunación: usuario autenticado
+                        // Un USER puede registrar una vacunación
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/vaccinations"
+                                "/api/vaccinations",
+                                "/api/vaccinations/**"
                         ).hasAnyRole("USER", "ADMIN")
 
-                        // Cambios sensibles: ADMIN
+                        // Crear dueños, mascotas y vacunas: ADMIN
                         .requestMatchers(
                                 HttpMethod.POST,
+                                "/api/owners",
                                 "/api/owners/**",
+                                "/api/pets",
                                 "/api/pets/**",
+                                "/api/vaccines",
                                 "/api/vaccines/**"
                         ).hasRole("ADMIN")
 
+                        // Actualizaciones: ADMIN
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/**"
                         ).hasRole("ADMIN")
 
+                        // Eliminaciones: ADMIN
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/**"
                         ).hasRole("ADMIN")
 
-                        // Todo lo que olvidemos queda protegido
+                        // Todo lo demás requiere autenticación
                         .anyRequest()
                         .authenticated()
                 )
@@ -196,27 +180,41 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
-        CorsConfiguration config = new CorsConfiguration();
+        CorsConfiguration config =
+                new CorsConfiguration();
 
         config.setAllowedOrigins(
                 List.of("http://localhost:4200")
         );
 
         config.setAllowedMethods(
-                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                List.of(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "OPTIONS"
+                )
         );
 
         config.setAllowedHeaders(
-                List.of("Authorization", "Content-Type")
+                List.of(
+                        "Authorization",
+                        "Content-Type"
+                )
         );
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
 
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration(
+                "/**",
+                config
+        );
 
         return source;
     }

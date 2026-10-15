@@ -6,6 +6,7 @@ import com.petvax.application.service.*;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.petvax.application.service.AuthService;
 
 @Configuration
 public class ApplicationConfig {
@@ -244,4 +245,23 @@ public class ApplicationConfig {
                 loadVaccinePort
         );
     }
+    @Bean
+    public AuthService authService(
+            SaveUserPort saveUserPort,
+            LoadUserPort loadUserPort,
+            CheckUserExistsPort checkUserExistsPort,
+            PasswordHasherPort passwordHasherPort,
+            AuthenticatorPort authenticatorPort,
+            TokenIssuerPort tokenIssuerPort
+    ) {
+        return new AuthService(
+                saveUserPort,
+                loadUserPort,
+                checkUserExistsPort,
+                passwordHasherPort,
+                authenticatorPort,
+                tokenIssuerPort
+        );
+    }
+
 }

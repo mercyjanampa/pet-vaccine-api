@@ -275,5 +275,14 @@ public class ApplicationConfig {
                 loadPetPort
         );
     }
-
+    @Bean
+    public GetMyVaccinationsUseCase getMyVaccinationsUseCase(
+            LoadUserPort loadUserPort,
+            LoadVaccinationsPort loadVaccinationsPort
+    ) {
+        return new GetMyVaccinationsService(
+                loadUserPort,
+                loadVaccinationsPort
+        );
+    }
 }

@@ -22,6 +22,16 @@ public interface VaccinationJpaRepository
     List<VaccinationEntity> findExpiredVaccinations(
             @Param("today") LocalDate today
     );
+
+    @Query("""
+            SELECT v
+            FROM VaccinationEntity v
+            WHERE v.pet.owner.id = :ownerId
+            """)
+    List<VaccinationEntity> findByOwnerId(
+            @Param("ownerId") Long ownerId
+    );
+
     boolean existsByPetIdAndVaccineIdAndApplicationDate(
             Long petId,
             Long vaccineId,

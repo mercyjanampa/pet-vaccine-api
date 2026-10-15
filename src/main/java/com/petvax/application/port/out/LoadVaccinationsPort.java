@@ -14,4 +14,5 @@ public interface LoadVaccinationsPort {
     List<Vaccination> findVaccinationsByPetId(Long petId);
 
     List<Vaccination> findExpiredVaccinations();
+    List<Vaccination> findVaccinationsByOwnerId(Long ownerId);
 }

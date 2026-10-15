@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import com.petvax.application.port.in.GetMyVaccinationsUseCase;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/vaccinations")
@@ -30,6 +32,7 @@ public class VaccinationController {
     private final ListExpiredVaccinationsUseCase listExpiredVaccinationsUseCase;
     private final UpdateVaccinationUseCase updateVaccinationUseCase;
     private final DeleteVaccinationUseCase deleteVaccinationUseCase;
+    private final GetMyVaccinationsUseCase getMyVaccinationsUseCase;
 
     public VaccinationController(
             RegisterVaccinationUseCase registerVaccinationUseCase,
@@ -38,7 +41,8 @@ public class VaccinationController {
             ListVaccinationsByPetUseCase listVaccinationsByPetUseCase,
             ListExpiredVaccinationsUseCase listExpiredVaccinationsUseCase,
             UpdateVaccinationUseCase updateVaccinationUseCase,
-            DeleteVaccinationUseCase deleteVaccinationUseCase
+            DeleteVaccinationUseCase deleteVaccinationUseCase,
+            GetMyVaccinationsUseCase getMyVaccinationsUseCase
     ) {
         this.registerVaccinationUseCase = registerVaccinationUseCase;
         this.listVaccinationsUseCase = listVaccinationsUseCase;
@@ -47,6 +51,7 @@ public class VaccinationController {
         this.listExpiredVaccinationsUseCase = listExpiredVaccinationsUseCase;
         this.updateVaccinationUseCase = updateVaccinationUseCase;
         this.deleteVaccinationUseCase = deleteVaccinationUseCase;
+        this.getMyVaccinationsUseCase = getMyVaccinationsUseCase;
     }
 
     @PostMapping
@@ -117,6 +122,21 @@ public class VaccinationController {
 
         List<VaccinationResponse> vaccinations =
                 listExpiredVaccinationsUseCase.findExpired()
+                        .stream()
+                        .map(this::toResponse)
+                        .toList();
+
+        return ResponseEntity.ok(vaccinations);
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<VaccinationResponse>> getMyVaccinations(
+            Authentication authentication
+    ) {
+
+        List<VaccinationResponse> vaccinations =
+                getMyVaccinationsUseCase
+                        .getMyVaccinations(authentication.getName())
                         .stream()
                         .map(this::toResponse)
                         .toList();

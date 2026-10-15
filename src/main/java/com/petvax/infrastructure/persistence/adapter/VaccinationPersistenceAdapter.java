@@ -96,6 +96,14 @@ public class VaccinationPersistenceAdapter
                 .toList();
     }
     @Override
+    public List<Vaccination> findVaccinationsByOwnerId(Long ownerId) {
+
+        return vaccinationRepository.findByOwnerId(ownerId)
+                .stream()
+                .map(VaccinationMapper::toDomain)
+                .toList();
+    }
+    @Override
     public void deleteVaccinationById(Long id) {
 
         vaccinationRepository.deleteById(id);

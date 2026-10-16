@@ -17,6 +17,8 @@ import com.petvax.application.port.in.DeletePetUseCase;
 import com.petvax.infrastructure.web.request.UpdatePetRequest;
 import org.springframework.security.core.Authentication;
 import com.petvax.application.port.in.GetMyPetsUseCase;
+import com.petvax.application.port.in.GetRecommendedVaccinesUseCase;
+import com.petvax.infrastructure.web.response.VaccineResponse;
 
 @RestController
 @RequestMapping("/api/pets")
@@ -28,6 +30,8 @@ public class PetController {
     private final UpdatePetUseCase updatePetUseCase;
     private final DeletePetUseCase deletePetUseCase;
     private final GetMyPetsUseCase getMyPetsUseCase;
+    private final GetRecommendedVaccinesUseCase getRecommendedVaccinesUseCase;
+
 
     public PetController(
             CreatePetUseCase createPetUseCase,
@@ -35,7 +39,8 @@ public class PetController {
             GetPetUseCase getPetUseCase,
             UpdatePetUseCase updatePetUseCase,
             DeletePetUseCase deletePetUseCase,
-            GetMyPetsUseCase getMyPetsUseCase
+            GetMyPetsUseCase getMyPetsUseCase,
+            GetRecommendedVaccinesUseCase getRecommendedVaccinesUseCase
     ) {
         this.createPetUseCase = createPetUseCase;
         this.listPetsUseCase = listPetsUseCase;
@@ -43,6 +48,8 @@ public class PetController {
         this.updatePetUseCase = updatePetUseCase;
         this.deletePetUseCase = deletePetUseCase;
         this.getMyPetsUseCase = getMyPetsUseCase;
+        this.getRecommendedVaccinesUseCase =
+                getRecommendedVaccinesUseCase;
     }
 
     @PostMapping
@@ -179,5 +186,31 @@ public class PetController {
                 .toList();
 
         return ResponseEntity.ok(pets);
+    }
+    @GetMapping("/{petId}/recommended-vaccines")
+    public ResponseEntity<List<VaccineResponse>> getRecommendedVaccines(
+            @PathVariable Long petId,
+            Authentication authentication
+    ) {
+
+        List<VaccineResponse> vaccines =
+                getRecommendedVaccinesUseCase
+                        .getRecommendedVaccines(
+                                petId,
+                                authentication.getName()
+                        )
+                        .stream()
+                        .map(vaccine ->
+                                new VaccineResponse(
+                                        vaccine.getId(),
+                                        vaccine.getName(),
+                                        vaccine.getSpecies(),
+                                        vaccine.getDescription(),
+                                        vaccine.getRecommendedIntervalMonths()
+                                )
+                        )
+                        .toList();
+
+        return ResponseEntity.ok(vaccines);
     }
 }

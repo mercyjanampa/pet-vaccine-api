@@ -317,4 +317,16 @@ public class ApplicationConfig {
                 savePetPort
         );
     }
+    @Bean
+    public GetRecommendedVaccinesUseCase getRecommendedVaccinesUseCase(
+            LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort,
+            LoadVaccinePort loadVaccinePort
+    ) {
+        return new GetRecommendedVaccinesService(
+                loadPetPort,
+                loadUserPort,
+                loadVaccinePort
+        );
+    }
 }

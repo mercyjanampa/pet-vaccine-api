@@ -61,20 +61,24 @@ public class ApplicationConfig {
     @Bean
     public ListVaccinationsByPetUseCase listVaccinationsByPetUseCase(
             LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort,
             LoadVaccinationsPort loadVaccinationsPort
     ) {
         return new ListVaccinationsByPetService(
                 loadPetPort,
+                loadUserPort,
                 loadVaccinationsPort
         );
     }
 
     @Bean
     public ListExpiredVaccinationsUseCase listExpiredVaccinationsUseCase(
-            LoadVaccinationsPort loadVaccinationsPort
+            LoadVaccinationsPort loadVaccinationsPort,
+            LoadUserPort loadUserPort
     ) {
         return new ListExpiredVaccinationsService(
-                loadVaccinationsPort
+                loadVaccinationsPort,
+                loadUserPort
         );
     }
 

@@ -22,7 +22,6 @@ import com.petvax.application.port.in.GetMyVaccinationsUseCase;
 import org.springframework.security.core.Authentication;
 import com.petvax.application.port.in.SendVaccinationReminderUseCase;
 import com.petvax.domain.model.NotificationType;
-import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/vaccinations")
@@ -127,11 +126,16 @@ public class VaccinationController {
 
     @GetMapping("/pet/{petId}")
     public ResponseEntity<List<VaccinationResponse>> findByPet(
-            @PathVariable Long petId
+            @PathVariable Long petId,
+
+            Authentication authentication
     ) {
 
         List<VaccinationResponse> vaccinations =
-                listVaccinationsByPetUseCase.findByPetId(petId)
+                listVaccinationsByPetUseCase.findByPetId(
+                                petId,
+                                authentication.getName()
+                        )
                         .stream()
                         .map(this::toResponse)
                         .toList();
@@ -140,10 +144,14 @@ public class VaccinationController {
     }
 
     @GetMapping("/expired")
-    public ResponseEntity<List<VaccinationResponse>> findExpiredVaccinations() {
+    public ResponseEntity<List<VaccinationResponse>> findExpiredVaccinations(
+            Authentication authentication
+    ) {
 
         List<VaccinationResponse> vaccinations =
-                listExpiredVaccinationsUseCase.findExpired()
+                listExpiredVaccinationsUseCase.findExpired(
+                                authentication.getName()
+                        )
                         .stream()
                         .map(this::toResponse)
                         .toList();

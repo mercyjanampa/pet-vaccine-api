@@ -1,6 +1,7 @@
 package com.petvax.application.service;
 
 import com.petvax.application.command.RegisterVaccinationCommand;
+import com.petvax.application.exception.ForbiddenOperationException;
 import com.petvax.application.port.out.CheckVaccinationExistsPort;
 import com.petvax.application.port.out.LoadPetPort;
 import com.petvax.application.port.out.LoadUserPort;
@@ -250,9 +251,9 @@ class RegisterVaccinationServiceTest {
                         "Intento sobre mascota ajena"
                 );
 
-        IllegalArgumentException exception =
+        ForbiddenOperationException exception =
                 assertThrows(
-                        IllegalArgumentException.class,
+                        ForbiddenOperationException.class,
                         () -> service.register(
                                 command,
                                 USER_EMAIL

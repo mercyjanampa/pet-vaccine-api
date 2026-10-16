@@ -6,5 +6,8 @@ import java.util.List;
 
 public interface ListVaccinationsByPetUseCase {
 
-    List<Vaccination> findByPetId(Long petId);
+    List<Vaccination> findByPetId(
+            Long petId,
+            String email
+    );
 }

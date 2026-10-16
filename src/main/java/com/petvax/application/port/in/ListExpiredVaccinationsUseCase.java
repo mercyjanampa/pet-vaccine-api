@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ListExpiredVaccinationsUseCase {
 
-    List<Vaccination> findExpired();
+    List<Vaccination> findExpired(String email);
 }

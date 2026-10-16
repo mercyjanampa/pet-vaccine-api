@@ -50,14 +50,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtEncoder jwtEncoder(SecretKey key) {
+    public JwtEncoder jwtEncoder(
+            SecretKey key
+    ) {
         return new NimbusJwtEncoder(
                 new ImmutableSecret<>(key)
         );
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(SecretKey key) {
+    public JwtDecoder jwtDecoder(
+            SecretKey key
+    ) {
         return NimbusJwtDecoder
                 .withSecretKey(key)
                 .macAlgorithm(MacAlgorithm.HS256)
@@ -84,7 +88,7 @@ public class SecurityConfig {
         JwtGrantedAuthoritiesConverter roles =
                 new JwtGrantedAuthoritiesConverter();
 
-        // El JWT guarda roles como ["USER"] o ["ADMIN"]
+        // El JWT guarda roles como USER o ADMIN
         roles.setAuthoritiesClaimName("roles");
 
         // Spring los convierte a ROLE_USER / ROLE_ADMIN
@@ -117,12 +121,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // Registro y login públicos
+                        // =========================
+                        // PUBLICO
+                        // =========================
+
+                        // Registro y login
                         .requestMatchers(
                                 "/auth/**"
                         ).permitAll()
 
-                        // Swagger público
+                        // Swagger
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
@@ -133,7 +141,13 @@ public class SecurityConfig {
                         // ADMIN
                         // =========================
 
-                        // Los usuarios y propietarios se administran desde ADMIN
+                        // Todo lo que esté bajo /api/admin
+                        // requiere rol ADMIN
+                        .requestMatchers(
+                                "/api/admin/**"
+                        ).hasRole("ADMIN")
+
+                        // Gestión de propietarios
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/owners",
@@ -146,7 +160,8 @@ public class SecurityConfig {
                                 "/api/owners/**"
                         ).hasRole("ADMIN")
 
-                        // El catálogo de vacunas solo lo modifica ADMIN
+                        // El catálogo de vacunas
+                        // solo lo crea el administrador
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/vaccines",
@@ -157,42 +172,58 @@ public class SecurityConfig {
                         // USER + ADMIN
                         // =========================
 
-                        // USER puede registrar sus propias mascotas
+                        // El usuario puede registrar sus mascotas
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/pets",
                                 "/api/pets/**"
-                        ).hasAnyRole("USER", "ADMIN")
+                        ).hasAnyRole(
+                                "USER",
+                                "ADMIN"
+                        )
 
-                        // USER puede registrar vacunaciones
+                        // El usuario puede registrar vacunaciones
+                        // únicamente sobre sus mascotas.
+                        // Esa validación está en Application.
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/vaccinations",
                                 "/api/vaccinations/**"
-                        ).hasAnyRole("USER", "ADMIN")
+                        ).hasAnyRole(
+                                "USER",
+                                "ADMIN"
+                        )
 
-                        // Consultas permitidas.
-                        // La aplicación se encarga de filtrar los recursos del USER.
+                        // Consultas.
+                        // Los servicios filtran los recursos
+                        // que pertenecen al USER.
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/**"
-                        ).hasAnyRole("USER", "ADMIN")
+                        ).hasAnyRole(
+                                "USER",
+                                "ADMIN"
+                        )
 
-                        // Por ahora las modificaciones siguen siendo de ADMIN
+                        // Por ahora las actualizaciones
+                        // permanecen restringidas a ADMIN
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/**"
                         ).hasRole("ADMIN")
 
-                        // Por ahora las eliminaciones siguen siendo de ADMIN
+                        // Por ahora las eliminaciones
+                        // permanecen restringidas a ADMIN
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/**"
                         ).hasRole("ADMIN")
 
+                        // Todo lo demás necesita autenticación
                         .anyRequest()
                         .authenticated()
                 )
+
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
                                 jwt.jwtAuthenticationConverter(
@@ -210,8 +241,11 @@ public class SecurityConfig {
         CorsConfiguration config =
                 new CorsConfiguration();
 
+        // Frontend local
         config.setAllowedOrigins(
-                List.of("http://localhost:4200")
+                List.of(
+                        "http://localhost:4200"
+                )
         );
 
         config.setAllowedMethods(

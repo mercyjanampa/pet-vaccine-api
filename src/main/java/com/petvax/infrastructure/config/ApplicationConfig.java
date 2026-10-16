@@ -307,4 +307,14 @@ public class ApplicationConfig {
                 loadVaccinationsPort
         );
     }
+    @Bean
+    public CreatePetForOwnerUseCase createPetForOwnerUseCase(
+            LoadOwnerPort loadOwnerPort,
+            SavePetPort savePetPort
+    ) {
+        return new CreatePetForOwnerService(
+                loadOwnerPort,
+                savePetPort
+        );
+    }
 }

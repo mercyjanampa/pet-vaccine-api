@@ -7,6 +7,8 @@ import com.petvax.application.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.petvax.application.service.AuthService;
+import com.petvax.application.factory.NotificationStrategyFactory;
+import java.util.List;
 
 @Configuration
 public class ApplicationConfig {
@@ -327,6 +329,26 @@ public class ApplicationConfig {
                 loadPetPort,
                 loadUserPort,
                 loadVaccinePort
+        );
+    }
+    @Bean
+    public NotificationStrategyFactory notificationStrategyFactory(
+            List<NotificationStrategy> strategies
+    ) {
+        return new NotificationStrategyFactory(strategies);
+    }
+    @Bean
+    public SendVaccinationReminderUseCase sendVaccinationReminderUseCase(
+            LoadVaccinationsPort loadVaccinationsPort,
+            LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort,
+            NotificationStrategyFactory notificationStrategyFactory
+    ) {
+        return new SendVaccinationReminderService(
+                loadVaccinationsPort,
+                loadPetPort,
+                loadUserPort,
+                notificationStrategyFactory
         );
     }
 }

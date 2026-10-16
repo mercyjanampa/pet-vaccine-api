@@ -20,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.petvax.application.port.in.GetMyVaccinationsUseCase;
 import org.springframework.security.core.Authentication;
+import com.petvax.application.port.in.SendVaccinationReminderUseCase;
+import com.petvax.domain.model.NotificationType;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/vaccinations")
@@ -33,6 +36,7 @@ public class VaccinationController {
     private final UpdateVaccinationUseCase updateVaccinationUseCase;
     private final DeleteVaccinationUseCase deleteVaccinationUseCase;
     private final GetMyVaccinationsUseCase getMyVaccinationsUseCase;
+    private final SendVaccinationReminderUseCase sendVaccinationReminderUseCase;
 
     public VaccinationController(
             RegisterVaccinationUseCase registerVaccinationUseCase,
@@ -42,7 +46,8 @@ public class VaccinationController {
             ListExpiredVaccinationsUseCase listExpiredVaccinationsUseCase,
             UpdateVaccinationUseCase updateVaccinationUseCase,
             DeleteVaccinationUseCase deleteVaccinationUseCase,
-            GetMyVaccinationsUseCase getMyVaccinationsUseCase
+            GetMyVaccinationsUseCase getMyVaccinationsUseCase,
+            SendVaccinationReminderUseCase sendVaccinationReminderUseCase
     ) {
         this.registerVaccinationUseCase = registerVaccinationUseCase;
         this.listVaccinationsUseCase = listVaccinationsUseCase;
@@ -52,6 +57,8 @@ public class VaccinationController {
         this.updateVaccinationUseCase = updateVaccinationUseCase;
         this.deleteVaccinationUseCase = deleteVaccinationUseCase;
         this.getMyVaccinationsUseCase = getMyVaccinationsUseCase;
+        this.sendVaccinationReminderUseCase =
+                sendVaccinationReminderUseCase;
     }
 
     @PostMapping
@@ -206,5 +213,20 @@ public class VaccinationController {
                 vaccination.getStatus(),
                 vaccination.getRecommendedAction()
         );
+    }
+    @PostMapping("/{id}/reminder")
+    public ResponseEntity<Void> sendReminder(
+            @PathVariable Long id,
+            @RequestParam NotificationType type,
+            Authentication authentication
+    ) {
+
+        sendVaccinationReminderUseCase.sendReminder(
+                id,
+                authentication.getName(),
+                type
+        );
+
+        return ResponseEntity.noContent().build();
     }
 }

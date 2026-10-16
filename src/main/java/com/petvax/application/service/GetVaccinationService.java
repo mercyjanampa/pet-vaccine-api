@@ -8,6 +8,7 @@ import com.petvax.domain.model.Pet;
 import com.petvax.domain.model.Role;
 import com.petvax.domain.model.User;
 import com.petvax.domain.model.Vaccination;
+import com.petvax.application.exception.ForbiddenOperationException;
 
 public class GetVaccinationService
         implements GetVaccinationUseCase {
@@ -60,7 +61,7 @@ public class GetVaccinationService
         if (user.getOwnerId() == null
                 || !user.getOwnerId().equals(pet.getOwnerId())) {
 
-            throw new IllegalArgumentException(
+            throw new ForbiddenOperationException(
                     "No tienes acceso a esta vacunación"
             );
         }

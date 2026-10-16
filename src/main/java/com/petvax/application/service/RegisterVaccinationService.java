@@ -8,6 +8,7 @@ import com.petvax.application.port.out.LoadUserPort;
 import com.petvax.application.port.out.LoadVaccinePort;
 import com.petvax.application.port.out.SaveVaccinationPort;
 import com.petvax.domain.model.*;
+import com.petvax.application.exception.ForbiddenOperationException;
 
 public class RegisterVaccinationService
         implements RegisterVaccinationUseCase {
@@ -60,7 +61,7 @@ public class RegisterVaccinationService
             if (user.getOwnerId() == null
                     || !user.getOwnerId().equals(pet.getOwnerId())) {
 
-                throw new IllegalArgumentException(
+                throw new ForbiddenOperationException(
                         "No tienes acceso para registrar vacunaciones en esta mascota"
                 );
             }

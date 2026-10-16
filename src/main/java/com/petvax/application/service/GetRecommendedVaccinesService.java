@@ -8,6 +8,7 @@ import com.petvax.domain.model.Pet;
 import com.petvax.domain.model.Role;
 import com.petvax.domain.model.User;
 import com.petvax.domain.model.Vaccine;
+import com.petvax.application.exception.ForbiddenOperationException;
 
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class GetRecommendedVaccinesService
             if (user.getOwnerId() == null
                     || !user.getOwnerId().equals(pet.getOwnerId())) {
 
-                throw new IllegalArgumentException(
+                throw new ForbiddenOperationException(
                         "No tienes acceso a esta mascota"
                 );
             }

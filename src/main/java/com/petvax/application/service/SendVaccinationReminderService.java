@@ -7,6 +7,7 @@ import com.petvax.application.port.out.LoadUserPort;
 import com.petvax.application.port.out.LoadVaccinationsPort;
 import com.petvax.application.port.out.NotificationStrategy;
 import com.petvax.domain.model.*;
+import com.petvax.application.exception.ForbiddenOperationException;
 
 public class SendVaccinationReminderService
         implements SendVaccinationReminderUseCase {
@@ -66,7 +67,7 @@ public class SendVaccinationReminderService
             if (user.getOwnerId() == null
                     || !user.getOwnerId().equals(pet.getOwnerId())) {
 
-                throw new IllegalArgumentException(
+                throw new ForbiddenOperationException(
                         "No tienes acceso a esta vacunación"
                 );
             }

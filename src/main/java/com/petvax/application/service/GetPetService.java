@@ -6,6 +6,7 @@ import com.petvax.application.port.out.LoadUserPort;
 import com.petvax.domain.model.Pet;
 import com.petvax.domain.model.Role;
 import com.petvax.domain.model.User;
+import com.petvax.application.exception.ForbiddenOperationException;
 
 public class GetPetService implements GetPetUseCase {
 
@@ -46,7 +47,7 @@ public class GetPetService implements GetPetUseCase {
         if (user.getOwnerId() == null
                 || !user.getOwnerId().equals(pet.getOwnerId())) {
 
-            throw new IllegalArgumentException(
+            throw new ForbiddenOperationException(
                     "No tienes acceso a esta mascota"
             );
         }

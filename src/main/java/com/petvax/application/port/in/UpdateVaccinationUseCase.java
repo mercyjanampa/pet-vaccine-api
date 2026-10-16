@@ -12,6 +12,7 @@ public interface UpdateVaccinationUseCase {
             Long vaccineId,
             LocalDate applicationDate,
             LocalDate nextDoseDate,
-            String notes
+            String notes,
+            String email
     );
 }

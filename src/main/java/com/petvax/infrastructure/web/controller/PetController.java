@@ -132,7 +132,8 @@ public class PetController {
     @PutMapping("/{id}")
     public ResponseEntity<PetResponse> updatePet(
             @PathVariable Long id,
-            @Valid @RequestBody UpdatePetRequest request
+            @Valid @RequestBody UpdatePetRequest request,
+            Authentication authentication
     ) {
 
         Pet pet = updatePetUseCase.update(
@@ -142,7 +143,8 @@ public class PetController {
                 request.breed(),
                 request.birthDate(),
                 request.sex(),
-                request.ownerId()
+                request.ownerId(),
+                authentication.getName()
         );
 
         PetResponse response = new PetResponse(
@@ -159,10 +161,14 @@ public class PetController {
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePet(
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication
     ) {
 
-        deletePetUseCase.delete(id);
+        deletePetUseCase.delete(
+                id,
+                authentication.getName()
+        );
 
         return ResponseEntity.noContent().build();
     }

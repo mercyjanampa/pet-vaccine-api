@@ -2,5 +2,8 @@ package com.petvax.application.port.in;
 
 public interface DeleteVaccinationUseCase {
 
-    void delete(Long id);
+    void delete(
+            Long id,
+            String email
+    );
 }

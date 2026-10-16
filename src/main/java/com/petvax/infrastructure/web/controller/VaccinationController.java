@@ -177,7 +177,8 @@ public class VaccinationController {
     @PutMapping("/{id}")
     public ResponseEntity<VaccinationResponse> updateVaccination(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateVaccinationRequest request
+            @Valid @RequestBody UpdateVaccinationRequest request,
+            Authentication authentication
     ) {
 
         Vaccination vaccination =
@@ -187,7 +188,8 @@ public class VaccinationController {
                         request.vaccineId(),
                         request.applicationDate(),
                         request.nextDoseDate(),
-                        request.notes()
+                        request.notes(),
+                        authentication.getName()
                 );
 
         return ResponseEntity.ok(
@@ -197,10 +199,14 @@ public class VaccinationController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVaccination(
-            @PathVariable Long id
+            @PathVariable Long id,
+            Authentication authentication
     ) {
 
-        deleteVaccinationUseCase.delete(id);
+        deleteVaccinationUseCase.delete(
+                id,
+                authentication.getName()
+        );
 
         return ResponseEntity.noContent().build();
     }

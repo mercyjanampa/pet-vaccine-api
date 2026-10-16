@@ -14,6 +14,7 @@ public interface UpdatePetUseCase {
             String breed,
             LocalDate birthDate,
             String sex,
-            Long ownerId
+            Long ownerId,
+            String email
     );
 }

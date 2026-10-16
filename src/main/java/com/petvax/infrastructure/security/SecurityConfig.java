@@ -137,17 +137,21 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+
                         // =========================
                         // ADMIN
                         // =========================
 
-                        // Todo lo que esté bajo /api/admin
-                        // requiere rol ADMIN
+                        // Todo lo que este bajo /api/admin
                         .requestMatchers(
                                 "/api/admin/**"
                         ).hasRole("ADMIN")
 
-                        // Gestión de propietarios
+
+                        // -------------------------
+                        // PROPIETARIOS
+                        // -------------------------
+
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/owners",
@@ -160,19 +164,55 @@ public class SecurityConfig {
                                 "/api/owners/**"
                         ).hasRole("ADMIN")
 
-                        // El catálogo de vacunas
-                        // solo lo crea el administrador
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/owners",
+                                "/api/owners/**"
+                        ).hasRole("ADMIN")
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/owners",
+                                "/api/owners/**"
+                        ).hasRole("ADMIN")
+
+
+                        // -------------------------
+                        // CATALOGO DE VACUNAS
+                        // -------------------------
+
+                        // Crear vacunas solo ADMIN
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/vaccines",
                                 "/api/vaccines/**"
                         ).hasRole("ADMIN")
 
+                        // Actualizar vacunas solo ADMIN
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/vaccines",
+                                "/api/vaccines/**"
+                        ).hasRole("ADMIN")
+
+                        // Eliminar vacunas solo ADMIN
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/vaccines",
+                                "/api/vaccines/**"
+                        ).hasRole("ADMIN")
+
+
                         // =========================
                         // USER + ADMIN
                         // =========================
 
-                        // El usuario puede registrar sus mascotas
+                        // -------------------------
+                        // MASCOTAS
+                        // -------------------------
+
+                        // USER puede registrar sus propias mascotas.
+                        // ADMIN tambien puede registrar.
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/pets",
@@ -182,9 +222,14 @@ public class SecurityConfig {
                                 "ADMIN"
                         )
 
-                        // El usuario puede registrar vacunaciones
-                        // únicamente sobre sus mascotas.
-                        // Esa validación está en Application.
+
+                        // -------------------------
+                        // VACUNACIONES
+                        // -------------------------
+
+                        // USER puede registrar vacunaciones
+                        // unicamente sobre sus mascotas.
+                        // Esa validacion se realiza en Application.
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/vaccinations",
@@ -194,9 +239,14 @@ public class SecurityConfig {
                                 "ADMIN"
                         )
 
-                        // Consultas.
+
+                        // -------------------------
+                        // CONSULTAS
+                        // -------------------------
+
+                        // USER y ADMIN pueden consultar.
                         // Los servicios filtran los recursos
-                        // que pertenecen al USER.
+                        // segun el propietario autenticado.
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/**"
@@ -205,21 +255,40 @@ public class SecurityConfig {
                                 "ADMIN"
                         )
 
-                        // Por ahora las actualizaciones
-                        // permanecen restringidas a ADMIN
+
+                        // -------------------------
+                        // ACTUALIZACIONES
+                        // -------------------------
+
+                        // USER puede actualizar sus propios recursos.
+                        // ADMIN puede actualizar cualquier recurso permitido.
+                        // El ownership se valida en Application.
                         .requestMatchers(
                                 HttpMethod.PUT,
                                 "/api/**"
-                        ).hasRole("ADMIN")
+                        ).hasAnyRole(
+                                "USER",
+                                "ADMIN"
+                        )
 
-                        // Por ahora las eliminaciones
-                        // permanecen restringidas a ADMIN
+
+                        // -------------------------
+                        // ELIMINACIONES
+                        // -------------------------
+
+                        // USER puede eliminar sus propios recursos.
+                        // ADMIN puede eliminar cualquier recurso permitido.
+                        // El ownership se valida en Application.
                         .requestMatchers(
                                 HttpMethod.DELETE,
                                 "/api/**"
-                        ).hasRole("ADMIN")
+                        ).hasAnyRole(
+                                "USER",
+                                "ADMIN"
+                        )
 
-                        // Todo lo demás necesita autenticación
+
+                        // Todo lo demas necesita autenticacion
                         .anyRequest()
                         .authenticated()
                 )

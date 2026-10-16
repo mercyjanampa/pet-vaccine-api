@@ -87,12 +87,14 @@ public class ApplicationConfig {
             LoadVaccinationsPort loadVaccinationsPort,
             LoadPetPort loadPetPort,
             LoadVaccinePort loadVaccinePort,
+            LoadUserPort loadUserPort,
             SaveVaccinationPort saveVaccinationPort
     ) {
         return new UpdateVaccinationService(
                 loadVaccinationsPort,
                 loadPetPort,
                 loadVaccinePort,
+                loadUserPort,
                 saveVaccinationPort
         );
     }
@@ -100,10 +102,14 @@ public class ApplicationConfig {
     @Bean
     public DeleteVaccinationUseCase deleteVaccinationUseCase(
             LoadVaccinationsPort loadVaccinationsPort,
+            LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort,
             DeleteVaccinationPort deleteVaccinationPort
     ) {
         return new DeleteVaccinationService(
                 loadVaccinationsPort,
+                loadPetPort,
+                loadUserPort,
                 deleteVaccinationPort
         );
     }
@@ -198,11 +204,13 @@ public class ApplicationConfig {
     public UpdatePetUseCase updatePetUseCase(
             LoadPetPort loadPetPort,
             LoadOwnerPort loadOwnerPort,
+            LoadUserPort loadUserPort,
             SavePetPort savePetPort
     ) {
         return new UpdatePetService(
                 loadPetPort,
                 loadOwnerPort,
+                loadUserPort,
                 savePetPort
         );
     }
@@ -210,10 +218,12 @@ public class ApplicationConfig {
     @Bean
     public DeletePetUseCase deletePetUseCase(
             LoadPetPort loadPetPort,
+            LoadUserPort loadUserPort,
             DeletePetPort deletePetPort
     ) {
         return new DeletePetService(
                 loadPetPort,
+                loadUserPort,
                 deletePetPort
         );
     }

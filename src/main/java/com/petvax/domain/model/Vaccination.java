@@ -8,6 +8,8 @@ public class Vaccination {
     private Long id;
     private Long petId;
     private Long vaccineId;
+    private String customVaccineName;
+    private VaccinationSource source;
     private LocalDate applicationDate;
     private LocalDate nextDoseDate;
     private String notes;
@@ -16,40 +18,71 @@ public class Vaccination {
             Long id,
             Long petId,
             Long vaccineId,
+            String customVaccineName,
+            VaccinationSource source,
             LocalDate applicationDate,
             LocalDate nextDoseDate,
             String notes
     ) {
 
-        // Toda vacunación debe pertenecer a una mascota
         if (petId == null) {
             throw new IllegalArgumentException(
                     "La mascota es obligatoria"
             );
         }
 
-        // Debe indicarse la vacuna aplicada
-        if (vaccineId == null) {
+        if (source == null) {
             throw new IllegalArgumentException(
-                    "La vacuna es obligatoria"
+                    "El origen de la vacunación es obligatorio"
             );
         }
 
-        // La fecha de aplicación es necesaria
+        if (source == VaccinationSource.CATALOG
+                && vaccineId == null) {
+
+            throw new IllegalArgumentException(
+                    "Debe seleccionar una vacuna del catálogo"
+            );
+        }
+
+        if (source == VaccinationSource.EXTERNAL
+                && (customVaccineName == null
+                || customVaccineName.isBlank())) {
+
+            throw new IllegalArgumentException(
+                    "Debe indicar el nombre de la vacuna externa"
+            );
+        }
+
+        if (source == VaccinationSource.CATALOG
+                && customVaccineName != null
+                && !customVaccineName.isBlank()) {
+
+            throw new IllegalArgumentException(
+                    "Una vacuna del catálogo no necesita nombre externo"
+            );
+        }
+
+        if (source == VaccinationSource.EXTERNAL
+                && vaccineId != null) {
+
+            throw new IllegalArgumentException(
+                    "Una vacuna externa no debe tener vaccineId"
+            );
+        }
+
         if (applicationDate == null) {
             throw new IllegalArgumentException(
                     "La fecha de aplicación es obligatoria"
             );
         }
 
-        // No permito registrar una vacunación aplicada en una fecha futura
         if (applicationDate.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException(
                     "La fecha de aplicación no puede estar en el futuro"
             );
         }
 
-        // La próxima dosis no puede ser anterior a la aplicación
         if (nextDoseDate != null
                 && nextDoseDate.isBefore(applicationDate)) {
 
@@ -61,28 +94,51 @@ public class Vaccination {
         this.id = id;
         this.petId = petId;
         this.vaccineId = vaccineId;
+        this.customVaccineName = customVaccineName;
+        this.source = source;
         this.applicationDate = applicationDate;
         this.nextDoseDate = nextDoseDate;
         this.notes = notes;
     }
 
+    // Lo mantenemos para no romper el código antiguo de catálogo
+    public Vaccination(
+            Long id,
+            Long petId,
+            Long vaccineId,
+            LocalDate applicationDate,
+            LocalDate nextDoseDate,
+            String notes
+    ) {
+        this(
+                id,
+                petId,
+                vaccineId,
+                null,
+                VaccinationSource.CATALOG,
+                applicationDate,
+                nextDoseDate,
+                notes
+        );
+    }
+
     public VaccinationStatus getStatus() {
 
-        // Si todavía no hay una fecha para la siguiente dosis
         if (nextDoseDate == null) {
             return VaccinationStatus.PENDING;
         }
 
         LocalDate today = LocalDate.now();
 
-        // La fecha ya pasó
         if (nextDoseDate.isBefore(today)) {
             return VaccinationStatus.EXPIRED;
         }
 
-        long days = ChronoUnit.DAYS.between(today, nextDoseDate);
+        long days = ChronoUnit.DAYS.between(
+                today,
+                nextDoseDate
+        );
 
-        // Si faltan siete días o menos, avisamos que está próxima
         if (days <= 7) {
             return VaccinationStatus.UPCOMING;
         }
@@ -117,6 +173,14 @@ public class Vaccination {
 
     public Long getVaccineId() {
         return vaccineId;
+    }
+
+    public String getCustomVaccineName() {
+        return customVaccineName;
+    }
+
+    public VaccinationSource getSource() {
+        return source;
     }
 
     public LocalDate getApplicationDate() {

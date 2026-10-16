@@ -56,22 +56,29 @@ public class VaccinationController {
 
     @PostMapping
     public ResponseEntity<VaccinationResponse> register(
-            @Valid @RequestBody RegisterVaccinationRequest request
+            @Valid @RequestBody RegisterVaccinationRequest request,
+            Authentication authentication
     ) {
 
         RegisterVaccinationCommand command =
                 new RegisterVaccinationCommand(
                         request.petId(),
                         request.vaccineId(),
+                        request.customVaccineName(),
+                        request.source(),
                         request.applicationDate(),
                         request.nextDoseDate(),
                         request.notes()
                 );
 
         Vaccination vaccination =
-                registerVaccinationUseCase.register(command);
+                registerVaccinationUseCase.register(
+                        command,
+                        authentication.getName()
+                );
 
-        VaccinationResponse response = toResponse(vaccination);
+        VaccinationResponse response =
+                toResponse(vaccination);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -183,12 +190,16 @@ public class VaccinationController {
         return ResponseEntity.noContent().build();
     }
 
-    private VaccinationResponse toResponse(Vaccination vaccination) {
+    private VaccinationResponse toResponse(
+            Vaccination vaccination
+    ) {
 
         return new VaccinationResponse(
                 vaccination.getId(),
                 vaccination.getPetId(),
                 vaccination.getVaccineId(),
+                vaccination.getCustomVaccineName(),
+                vaccination.getSource(),
                 vaccination.getApplicationDate(),
                 vaccination.getNextDoseDate(),
                 vaccination.getNotes(),

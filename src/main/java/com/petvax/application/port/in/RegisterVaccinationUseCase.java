@@ -5,5 +5,8 @@ import com.petvax.domain.model.Vaccination;
 
 public interface RegisterVaccinationUseCase {
 
-    Vaccination register(RegisterVaccinationCommand command);
+    Vaccination register(
+            RegisterVaccinationCommand command,
+            String email
+    );
 }

@@ -20,18 +20,28 @@ public class VaccinationMapper {
                 vaccination.getId(),
                 pet,
                 vaccine,
+                vaccination.getCustomVaccineName(),
+                vaccination.getSource(),
                 vaccination.getApplicationDate(),
                 vaccination.getNextDoseDate(),
                 vaccination.getNotes()
         );
     }
 
-    public static Vaccination toDomain(VaccinationEntity entity) {
+    public static Vaccination toDomain(
+            VaccinationEntity entity
+    ) {
+
+        Long vaccineId = entity.getVaccine() != null
+                ? entity.getVaccine().getId()
+                : null;
 
         return new Vaccination(
                 entity.getId(),
                 entity.getPet().getId(),
-                entity.getVaccine().getId(),
+                vaccineId,
+                entity.getCustomVaccineName(),
+                entity.getSource(),
                 entity.getApplicationDate(),
                 entity.getNextDoseDate(),
                 entity.getNotes()

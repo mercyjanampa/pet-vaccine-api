@@ -42,18 +42,34 @@ public class VaccinationPersistenceAdapter
     @Override
     public Vaccination save(Vaccination vaccination) {
 
-        PetEntity pet = petRepository.findById(vaccination.getPetId())
+        PetEntity pet = petRepository
+                .findById(vaccination.getPetId())
                 .orElseThrow(() ->
-                        new IllegalArgumentException("La mascota no existe")
+                        new IllegalArgumentException(
+                                "La mascota no existe"
+                        )
                 );
 
-        VaccineEntity vaccine = vaccineRepository.findById(vaccination.getVaccineId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("La vacuna no existe")
-                );
+        VaccineEntity vaccine = null;
+
+        // Solo buscamos una vacuna del catálogo cuando existe vaccineId
+        if (vaccination.getVaccineId() != null) {
+
+            vaccine = vaccineRepository
+                    .findById(vaccination.getVaccineId())
+                    .orElseThrow(() ->
+                            new IllegalArgumentException(
+                                    "La vacuna no existe"
+                            )
+                    );
+        }
 
         VaccinationEntity entity =
-                VaccinationMapper.toEntity(vaccination, pet, vaccine);
+                VaccinationMapper.toEntity(
+                        vaccination,
+                        pet,
+                        vaccine
+                );
 
         VaccinationEntity savedEntity =
                 vaccinationRepository.save(entity);

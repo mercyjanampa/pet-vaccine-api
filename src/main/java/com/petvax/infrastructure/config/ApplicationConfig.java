@@ -19,12 +19,14 @@ public class ApplicationConfig {
     public RegisterVaccinationUseCase registerVaccinationUseCase(
             LoadPetPort loadPetPort,
             LoadVaccinePort loadVaccinePort,
+            LoadUserPort loadUserPort,
             SaveVaccinationPort saveVaccinationPort,
             CheckVaccinationExistsPort checkVaccinationExistsPort
     ) {
         return new RegisterVaccinationService(
                 loadPetPort,
                 loadVaccinePort,
+                loadUserPort,
                 saveVaccinationPort,
                 checkVaccinationExistsPort
         );

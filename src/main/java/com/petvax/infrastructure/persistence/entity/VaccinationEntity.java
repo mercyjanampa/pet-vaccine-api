@@ -1,5 +1,6 @@
 package com.petvax.infrastructure.persistence.entity;
 
+import com.petvax.domain.model.VaccinationSource;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -17,8 +18,15 @@ public class VaccinationEntity {
     private PetEntity pet;
 
     @ManyToOne
-    @JoinColumn(name = "vaccine_id", nullable = false)
+    @JoinColumn(name = "vaccine_id", nullable = true)
     private VaccineEntity vaccine;
+
+    @Column(name = "custom_vaccine_name")
+    private String customVaccineName;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VaccinationSource source;
 
     private LocalDate applicationDate;
     private LocalDate nextDoseDate;
@@ -26,13 +34,14 @@ public class VaccinationEntity {
     private String notes;
 
     public VaccinationEntity() {
-        // JPA usa este constructor para crear los objetos
     }
 
     public VaccinationEntity(
             Long id,
             PetEntity pet,
             VaccineEntity vaccine,
+            String customVaccineName,
+            VaccinationSource source,
             LocalDate applicationDate,
             LocalDate nextDoseDate,
             String notes
@@ -40,6 +49,8 @@ public class VaccinationEntity {
         this.id = id;
         this.pet = pet;
         this.vaccine = vaccine;
+        this.customVaccineName = customVaccineName;
+        this.source = source;
         this.applicationDate = applicationDate;
         this.nextDoseDate = nextDoseDate;
         this.notes = notes;
@@ -55,6 +66,14 @@ public class VaccinationEntity {
 
     public VaccineEntity getVaccine() {
         return vaccine;
+    }
+
+    public String getCustomVaccineName() {
+        return customVaccineName;
+    }
+
+    public VaccinationSource getSource() {
+        return source;
     }
 
     public LocalDate getApplicationDate() {
@@ -79,6 +98,14 @@ public class VaccinationEntity {
 
     public void setVaccine(VaccineEntity vaccine) {
         this.vaccine = vaccine;
+    }
+
+    public void setCustomVaccineName(String customVaccineName) {
+        this.customVaccineName = customVaccineName;
+    }
+
+    public void setSource(VaccinationSource source) {
+        this.source = source;
     }
 
     public void setApplicationDate(LocalDate applicationDate) {
